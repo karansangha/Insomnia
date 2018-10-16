@@ -23,7 +23,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
             button.action = #selector(printQuote(_:))
         }
-        constructMenu()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -34,10 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func printQuote(_ sender: Any?) {
         status = -status
-        let quoteText = "Never put off until tomorrow what you can do the day after tomorrow."
-        let quoteAuthor = "Mark Twain"
-        
-        print("\(quoteText) — \(quoteAuthor) and status = \(status)")
         
         var success = IOPMAssertionCreateWithName( kIOPMAssertionTypeNoDisplaySleep as CFString,
                                                    IOPMAssertionLevel(kIOPMAssertionLevelOn),
@@ -48,15 +43,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 success = IOPMAssertionRelease(assertionID);
             }
         }
-    }
-    
-    func constructMenu() {
-        let menu = NSMenu()
-        
-        menu.addItem(NSMenuItem(title: "Print Quote", action: #selector(AppDelegate.printQuote(_:)), keyEquivalent: "P"))
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit Quotes", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-        
-        statusItem.menu = menu
     }
 }
