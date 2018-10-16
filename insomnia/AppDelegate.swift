@@ -16,25 +16,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let reasonForActivity = "Reason for activity" as CFString
     var assertionID: IOPMAssertionID = 0
     var status = -1 // default = off
-    
+    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
+    var menu = NSMenu()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         if let button = statusItem.button {
             button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
-            button.action = #selector(changeSleepStatus(_:))
+            button.action = #selector(statusBarButtonClicked(_:))
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
+        constructMenu()
+        statusItem.menu = nil
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
-
-    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
     
     @objc func changeSleepStatus(_ sender: Any?) {
-        status = -status
         changeIcon()
-        
+        changeStatus()
+    }
+    
+    func changeStatus() {
+        status = -status
         var success = IOPMAssertionCreateWithName( kIOPMAssertionTypeNoDisplaySleep as CFString,
                                                    IOPMAssertionLevel(kIOPMAssertionLevelOn),
                                                    reasonForActivity,
@@ -53,6 +58,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } else {
                 button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
             }
+        }
+    }
+    
+    func constructMenu() {
+        menu.addItem(NSMenuItem(title: "Quit Insomnia", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+    }
+    
+    @objc func statusBarButtonClicked(_ sender: Any?) {
+        let event = NSApp.currentEvent!
+        
+        if event.type == NSEvent.EventType.rightMouseUp {
+            statusItem.menu = menu
+            statusItem.popUpMenu(menu)
+            statusItem.menu = nil
+        } else {
+            statusItem.menu = nil
+            changeIcon()
+            changeStatus()
         }
     }
 }
