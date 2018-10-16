@@ -33,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func changeSleepStatus(_ sender: Any?) {
         status = -status
+        changeIcon()
         
         var success = IOPMAssertionCreateWithName( kIOPMAssertionTypeNoDisplaySleep as CFString,
                                                    IOPMAssertionLevel(kIOPMAssertionLevelOn),
@@ -41,6 +42,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if success == kIOReturnSuccess {
             if(status == -1) {
                 success = IOPMAssertionRelease(assertionID);
+            }
+        }
+    }
+    
+    func changeIcon() {
+        if let button = statusItem.button {
+            if (button.image == NSImage(named:NSImage.Name("StatusBarButtonImage"))) {
+                button.image = NSImage(named:NSImage.Name("statusIcon"))
+            } else {
+                button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
             }
         }
     }
