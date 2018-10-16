@@ -21,7 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         if let button = statusItem.button {
-            button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
+            button.image = NSImage(named:NSImage.Name("closed"))
             button.action = #selector(statusBarButtonClicked(_:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
@@ -53,10 +53,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func changeIcon() {
         if let button = statusItem.button {
-            if (button.image == NSImage(named:NSImage.Name("StatusBarButtonImage"))) {
-                button.image = NSImage(named:NSImage.Name("statusIcon"))
+            if (button.image == NSImage(named:NSImage.Name("closed"))) {
+                button.image = NSImage(named:NSImage.Name("open"))
             } else {
-                button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
+                button.image = NSImage(named:NSImage.Name("closed"))
             }
         }
     }

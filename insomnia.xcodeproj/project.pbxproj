@@ -9,18 +9,18 @@
 /* Begin PBXBuildFile section */
 		341E7A33217507A30079E2AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341E7A32217507A30079E2AC /* AppDelegate.swift */; };
 		341E7A35217507A30079E2AC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341E7A34217507A30079E2AC /* ViewController.swift */; };
-		341E7A37217507A60079E2AC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 341E7A36217507A60079E2AC /* Assets.xcassets */; };
 		341E7A3A217507A60079E2AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 341E7A38217507A60079E2AC /* Main.storyboard */; };
+		34ACC40B21769519007213B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34ACC40A21769519007213B7 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		341E7A2F217507A30079E2AC /* insomnia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = insomnia.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		341E7A32217507A30079E2AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		341E7A34217507A30079E2AC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		341E7A36217507A60079E2AC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		341E7A39217507A60079E2AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		341E7A3B217507A60079E2AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		341E7A3C217507A60079E2AC /* insomnia.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = insomnia.entitlements; sourceTree = "<group>"; };
+		34ACC40A21769519007213B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,8 +55,8 @@
 			children = (
 				341E7A32217507A30079E2AC /* AppDelegate.swift */,
 				341E7A34217507A30079E2AC /* ViewController.swift */,
-				341E7A36217507A60079E2AC /* Assets.xcassets */,
 				341E7A38217507A60079E2AC /* Main.storyboard */,
+				34ACC40A21769519007213B7 /* Assets.xcassets */,
 				341E7A3B217507A60079E2AC /* Info.plist */,
 				341E7A3C217507A60079E2AC /* insomnia.entitlements */,
 			);
@@ -121,7 +121,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				341E7A37217507A60079E2AC /* Assets.xcassets in Resources */,
+				34ACC40B21769519007213B7 /* Assets.xcassets in Resources */,
 				341E7A3A217507A60079E2AC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
