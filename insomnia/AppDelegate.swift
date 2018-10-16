@@ -7,11 +7,16 @@
 //
 
 import Cocoa
+import IOKit
+import IOKit.pwr_mgt
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-
+    let reasonForActivity = "Reason for activity" as CFString
+    var assertionID: IOPMAssertionID = 0
+    var status = -1 // default = off
+    
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         if let button = statusItem.button {
@@ -28,10 +33,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
     
     @objc func printQuote(_ sender: Any?) {
+        status = -status
         let quoteText = "Never put off until tomorrow what you can do the day after tomorrow."
         let quoteAuthor = "Mark Twain"
         
-        print("\(quoteText) — \(quoteAuthor)")
+        print("\(quoteText) — \(quoteAuthor) and status = \(status)")
+        
+        var success = IOPMAssertionCreateWithName( kIOPMAssertionTypeNoDisplaySleep as CFString,
+                                                   IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                                                   reasonForActivity,
+                                                   &assertionID )
+        if success == kIOReturnSuccess {
+            if(status == -1) {
+                success = IOPMAssertionRelease(assertionID);
+            }
+        }
     }
     
     func constructMenu() {
