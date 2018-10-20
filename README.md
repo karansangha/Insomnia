@@ -10,3 +10,5 @@ This can be useful when:
 - Monitoring progress on a long-running task
 
 Download: https://github.com/karansangha/Insomnia/releases/download/v1.0/insomnia.dmg
+
+Iconography by : [Seerat Rana](https://www.behance.net/gallery/71477561/insomina-app-icon)
