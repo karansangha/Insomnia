@@ -10,8 +10,24 @@
 		341E7A33217507A30079E2AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341E7A32217507A30079E2AC /* AppDelegate.swift */; };
 		341E7A35217507A30079E2AC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341E7A34217507A30079E2AC /* ViewController.swift */; };
 		341E7A3A217507A60079E2AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 341E7A38217507A60079E2AC /* Main.storyboard */; };
+		34A0E43D21C84DF800927E3E /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0E43C21C84DF700927E3E /* LaunchAtLogin.framework */; };
+		34A0E43E21C84DF800927E3E /* LaunchAtLogin.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A0E43C21C84DF700927E3E /* LaunchAtLogin.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34ACC40B21769519007213B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34ACC40A21769519007213B7 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		34A0E43F21C84DF800927E3E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				34A0E43E21C84DF800927E3E /* LaunchAtLogin.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		341E7A2F217507A30079E2AC /* insomnia.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = insomnia.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -20,6 +36,7 @@
 		341E7A39217507A60079E2AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		341E7A3B217507A60079E2AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		341E7A3C217507A60079E2AC /* insomnia.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = insomnia.entitlements; sourceTree = "<group>"; };
+		34A0E43C21C84DF700927E3E /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
 		34ACC40A21769519007213B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -28,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34A0E43D21C84DF800927E3E /* LaunchAtLogin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,6 +55,7 @@
 		341E7A26217507A20079E2AC = {
 			isa = PBXGroup;
 			children = (
+				34A0E43C21C84DF700927E3E /* LaunchAtLogin.framework */,
 				341E7A31217507A30079E2AC /* insomnia */,
 				341E7A30217507A30079E2AC /* Products */,
 			);
@@ -73,6 +92,8 @@
 				341E7A2B217507A30079E2AC /* Sources */,
 				341E7A2C217507A30079E2AC /* Frameworks */,
 				341E7A2D217507A30079E2AC /* Resources */,
+				34A0E43F21C84DF800927E3E /* Embed Frameworks */,
+				34A0E44021C84E0600927E3E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -127,6 +148,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		34A0E44021C84E0600927E3E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n${PROJECT_DIR}/Carthage/Build/Mac/LaunchAtLogin.framework/Resources/copy-helper.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		341E7A2B217507A30079E2AC /* Sources */ = {
@@ -274,6 +315,10 @@
 				CODE_SIGN_ENTITLEMENTS = insomnia/insomnia.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = insomnia/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -292,6 +337,10 @@
 				CODE_SIGN_ENTITLEMENTS = insomnia/insomnia.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = insomnia/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

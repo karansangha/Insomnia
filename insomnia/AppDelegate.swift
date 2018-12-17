@@ -9,6 +9,7 @@
 import Cocoa
 import IOKit
 import IOKit.pwr_mgt
+import LaunchAtLogin
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -18,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var status = -1 // default = off
     let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
     var menu = NSMenu()
+    
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         if let button = statusItem.button {
@@ -27,6 +29,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         constructMenu()
         statusItem.menu = nil
+        LaunchAtLogin.isEnabled = true
+        print(LaunchAtLogin.isEnabled)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
