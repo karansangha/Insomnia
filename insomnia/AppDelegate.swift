@@ -30,7 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         constructMenu()
         statusItem.menu = nil
         LaunchAtLogin.isEnabled = true
-        print(LaunchAtLogin.isEnabled)
+        doChanges()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
