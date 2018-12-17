@@ -33,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
     
-    @objc func changeSleepStatus(_ sender: Any?) {
+    func doChanges() {
         changeIcon()
         changeStatus()
     }
@@ -74,8 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             statusItem.menu = nil
         } else {
             statusItem.menu = nil
-            changeIcon()
-            changeStatus()
+            doChanges()
         }
     }
 }
