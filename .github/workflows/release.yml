@@ -21,6 +21,16 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Set App Version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Setting version to $VERSION"
+          plutil -replace CFBundleShortVersionString -string "$VERSION" insomnia/Info.plist
+          plutil -replace CFBundleVersion -string "$VERSION" insomnia/Info.plist
+
+      - name: Run Tests
+        run: swift test
+
       - name: Build App and Create DMG
         run: |
           chmod +x install_app.sh
