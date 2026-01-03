@@ -4,9 +4,18 @@ import InsomniaCore
 @main
 struct InsomniaApp: App {
     @StateObject private var sleepManager = SleepManager()
+    @StateObject private var updateChecker = UpdateChecker()
 
     var body: some Scene {
         MenuBarExtra {
+            // Update Banner
+            if updateChecker.updateAvailable, let url = updateChecker.releaseURL {
+                Button("Update Available: \(updateChecker.latestVersion)") {
+                    NSWorkspace.shared.open(url)
+                }
+                Divider()
+            }
+
             // Unconditional keep awake
             Button {
                 sleepManager.toggle()
@@ -59,5 +68,17 @@ struct InsomniaApp: App {
         } label: {
             Image(sleepManager.iconName)
         }
+        .menuBarExtraStyle(.menu) // Ensure standard menu style
+    }
+    
+    init() {
+        // Trigger update check on launch
+        let checker = UpdateChecker()
+        checker.checkForUpdates()
+        _updateChecker = StateObject(wrappedValue: checker)
+        
+        // Initialize Core
+        let manager = SleepManager()
+        _sleepManager = StateObject(wrappedValue: manager)
     }
 }

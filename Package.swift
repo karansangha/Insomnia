@@ -14,7 +14,7 @@ let package = Package(
         .target(
             name: "InsomniaCore",
             path: "insomnia",
-            exclude: ["InsomniaApp.swift", "Info.plist", "insomnia.entitlements", "Assets.xcassets"]
+            exclude: ["InsomniaApp.swift", "UpdateChecker.swift", "Info.plist", "insomnia.entitlements", "Assets.xcassets"]
         ),
         .executableTarget(
             name: "Insomnia",
