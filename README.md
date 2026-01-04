@@ -24,6 +24,10 @@ Check the [Releases](https://github.com/karansangha/Insomnia/releases) page for 
    ```
 3. Move `Insomnia.app` to your Applications folder.
 
+> [!NOTE]
+> Since this app is not signed with an Apple Developer ID, macOS may warn that it "cannot be checked for malicious software".
+> To open it: **Right-click** the app and select **Open**, then click **Open** again in the dialog.
+
 ### CLI Build
 You can also build using Swift Package Manager:
 ```bash
