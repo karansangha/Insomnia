@@ -91,6 +91,10 @@ if [ -d "insomnia/Assets.xcassets/AppIcon.appiconset" ]; then
     fi
 fi
 
+# Ad-hoc sign the app to prevent some local Gatekeeper/Permission issues
+echo "Signing app (ad-hoc)..."
+codesign --force --deep --sign - "${APP_BUNDLE}"
+
 echo "------------------------------------------------"
 echo "Done! App created at $(pwd)/${APP_BUNDLE}"
 echo "To install: mv ${APP_BUNDLE} /Applications/"
