@@ -30,11 +30,16 @@ jobs:
 
       - name: Run Tests
         run: swift test
-
-      - name: Build App and Create DMG
+        
+      - name: Build and Sign
         run: |
           chmod +x install_app.sh
           chmod +x create_dmg.sh
+          # Build app
+          ./install_app.sh
+          # Ad-hoc code sign (avoids "damaged" error on some systems, though Gatekeeper might still complain)
+          codesign --force --deep --sign - Insomnia.app
+          # Create DMG
           ./create_dmg.sh
 
       - name: Create Release
