@@ -4,8 +4,8 @@ import UserNotifications
 
 @main
 struct InsomniaApp: App {
-    @StateObject private var sleepManager = SleepManager()
-    @StateObject private var updateChecker = UpdateChecker()
+    @StateObject private var sleepManager: SleepManager
+    @StateObject private var updateChecker: UpdateChecker
 
     var body: some Scene {
         MenuBarExtra {
@@ -84,15 +84,11 @@ struct InsomniaApp: App {
     }
     
     init() {
-        // Trigger update check on launch
+        let manager = SleepManager.shared
         let checker = UpdateChecker()
         checker.checkForUpdates()
+        _sleepManager = StateObject(wrappedValue: manager)
         _updateChecker = StateObject(wrappedValue: checker)
-
-        // Initialize Core
-        _sleepManager = StateObject(wrappedValue: SleepManager.shared)
-
-        // Request notification permission for battery safety alerts
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 }
