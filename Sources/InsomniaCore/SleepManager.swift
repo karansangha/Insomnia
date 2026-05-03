@@ -156,7 +156,12 @@ public class SleepManager: ObservableObject {
 
     public var remainingTimeIdentifier: String? {
         guard let time = remainingTime else { return nil }
-        let minutes = Int(time) / 60
-        return "Time remaining: \(minutes)m"
+        let totalSeconds = Int(time)
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        if minutes == 0 {
+            return "Time remaining: \(seconds)s"
+        }
+        return seconds > 0 ? "Time remaining: \(minutes)m \(seconds)s" : "Time remaining: \(minutes)m"
     }
 }

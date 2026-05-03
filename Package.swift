@@ -12,15 +12,12 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "InsomniaCore",
-            path: "insomnia",
-            exclude: ["InsomniaApp.swift", "UpdateChecker.swift", "Intents.swift", "Info.plist", "insomnia.entitlements", "Assets.xcassets"]
+            name: "InsomniaCore"
         ),
         .executableTarget(
             name: "Insomnia",
             dependencies: ["InsomniaCore"],
-            path: "insomnia",
-            exclude: ["SleepManager.swift", "Info.plist", "insomnia.entitlements"],
+            exclude: ["Info.plist", "insomnia.entitlements"],
             resources: [.process("Assets.xcassets")]
         ),
         .testTarget(
