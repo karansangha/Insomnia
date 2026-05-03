@@ -12,6 +12,7 @@ public class SleepManager: ObservableObject {
 
     @Published public var isActive: Bool = false
     @Published public var remainingTime: TimeInterval? = nil
+    @Published public var activatedDuration: TimeInterval? = nil
     @Published public var batterySafetyEnabled: Bool = false {
         didSet {
             UserDefaults.standard.set(batterySafetyEnabled, forKey: "batterySafetyEnabled")
@@ -67,6 +68,7 @@ public class SleepManager: ObservableObject {
         if success == kIOReturnSuccess {
             isActive = true
             remainingTime = duration
+            activatedDuration = duration
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.tick()
@@ -86,6 +88,7 @@ public class SleepManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         remainingTime = nil
+        activatedDuration = nil
         tickCount = 0
     }
 
