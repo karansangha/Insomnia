@@ -78,7 +78,11 @@ struct InsomniaApp: App {
     private func timerButton(label: String, seconds: TimeInterval) -> some View {
         let isSelected = sleepManager.isActive && sleepManager.remainingTime.map { Int($0) == Int(seconds) } == true
         Button {
-            sleepManager.activate(for: seconds)
+            if isSelected {
+                sleepManager.deactivate()
+            } else {
+                sleepManager.activate(for: seconds)
+            }
         } label: {
             Text(isSelected ? "✓ \(label)" : label)
         }
