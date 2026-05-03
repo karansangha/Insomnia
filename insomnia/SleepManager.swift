@@ -3,12 +3,11 @@ import IOKit
 import IOKit.pwr_mgt
 import IOKit.ps
 import SwiftUI
-import AppKit
-import ServiceManagement
-
 import ServiceManagement
 import Combine
+import UserNotifications
 
+@MainActor
 public class SleepManager: ObservableObject {
     public static let shared = SleepManager()
 
@@ -25,21 +24,20 @@ public class SleepManager: ObservableObject {
     @Published public var allowDisplaySleep: Bool = false {
         didSet {
             if isActive {
-                // Re-activate to switch assertion type
                 activate(for: remainingTime)
             }
         }
     }
-    
+
     private var assertionID: IOPMAssertionID = 0
     private var timer: Timer?
     private var tickCount = 0
     private let reasonForActivity = "Insomnia - Prevent Sleep" as CFString
-    
+
     public init() {
         self.batterySafetyEnabled = UserDefaults.standard.bool(forKey: "batterySafetyEnabled")
     }
-    
+
     public func toggle() {
         if isActive {
             deactivate()
@@ -47,36 +45,36 @@ public class SleepManager: ObservableObject {
             activate()
         }
     }
-    
+
     public func activate(for duration: TimeInterval? = nil) {
-        // If already active, release existing to be safe or just update timer
         if isActive {
             deactivate()
         }
-        
+
         let assertionType = allowDisplaySleep ? kIOPMAssertionTypePreventUserIdleSystemSleep : kIOPMAssertionTypeNoDisplaySleep
-        
+
         let success = IOPMAssertionCreateWithName(
             assertionType as CFString,
             IOPMAssertionLevel(kIOPMAssertionLevelOn),
             reasonForActivity,
             &assertionID
         )
-        
+
         if success == kIOReturnSuccess {
             isActive = true
             remainingTime = duration
-            
-            // start timer unconditionally to handle both custom duration and battery checking
+
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                self?.tick()
+                Task { @MainActor [weak self] in
+                    self?.tick()
+                }
             }
         } else {
             print("Failed to create IOPMAssertion")
             isActive = false
         }
     }
-    
+
     public func deactivate() {
         if isActive {
             IOPMAssertionRelease(assertionID)
@@ -85,11 +83,12 @@ public class SleepManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         remainingTime = nil
+        tickCount = 0
     }
-    
+
     private func tick() {
         tickCount += 1
-        
+
         if let time = remainingTime {
             if time > 0 {
                 remainingTime = time - 1
@@ -98,27 +97,24 @@ public class SleepManager: ObservableObject {
                 return
             }
         }
-        
-        // Every 30 seconds, check battery
+
         if batterySafetyEnabled && tickCount % 30 == 0 {
             checkBattery()
         }
     }
-    
+
     private func checkBattery() {
         guard let level = SleepManager.getBatteryLevel() else { return }
         if level <= 20 {
             deactivate()
-            DispatchQueue.main.async {
-                self.showBatteryAlert()
-            }
+            sendBatteryNotification()
         }
     }
-    
+
     public static func getBatteryLevel() -> Int? {
         let snapshot = IOPSCopyPowerSourcesInfo().takeRetainedValue()
         let sources = IOPSCopyPowerSourcesList(snapshot).takeRetainedValue() as Array
-        
+
         for ps in sources {
             guard let info = IOPSGetPowerSourceDescription(snapshot, ps).takeUnretainedValue() as? [String: Any] else { continue }
             if let isPresent = info[kIOPSIsPresentKey] as? Bool, isPresent,
@@ -129,17 +125,15 @@ public class SleepManager: ObservableObject {
         }
         return nil
     }
-    
-    private func showBatteryAlert() {
-        let alert = NSAlert()
-        alert.messageText = "Battery Safety Triggered"
-        alert.informativeText = "Insomnia has deactivated because your battery dropped below 20%."
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "OK")
-        NSApp.activate(ignoringOtherApps: true)
-        alert.runModal()
+
+    private func sendBatteryNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Insomnia Deactivated"
+        content.body = "Battery dropped below 20%. Sleep prevention has been disabled."
+        let request = UNNotificationRequest(identifier: "battery-safety", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
-    
+
     public var iconName: String {
         return isActive ? "open" : "closed"
     }
@@ -159,7 +153,7 @@ public class SleepManager: ObservableObject {
             }
         }
     }
-    
+
     public var remainingTimeIdentifier: String? {
         guard let time = remainingTime else { return nil }
         let minutes = Int(time) / 60

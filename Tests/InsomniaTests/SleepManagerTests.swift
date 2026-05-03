@@ -1,6 +1,7 @@
 import XCTest
 @testable import InsomniaCore
 
+@MainActor
 final class SleepManagerTests: XCTestCase {
     var sleepManager: SleepManager!
     
