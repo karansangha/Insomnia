@@ -48,7 +48,7 @@ struct InsomniaApp: App {
             // Status info
             if let remaining = sleepManager.remainingTimeIdentifier {
                 Text(remaining)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             
             Toggle("Launch at Login", isOn: Binding(
@@ -69,7 +69,7 @@ struct InsomniaApp: App {
             .keyboardShortcut("q")
             
         } label: {
-            Image(sleepManager.iconName)
+            Image(sleepManager.isActive ? "open" : "closed")
         }
         .menuBarExtraStyle(.menu) // Ensure standard menu style
     }

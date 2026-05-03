@@ -2,7 +2,6 @@ import Foundation
 import IOKit
 import IOKit.pwr_mgt
 import IOKit.ps
-import SwiftUI
 import ServiceManagement
 import Combine
 import UserNotifications
@@ -139,10 +138,6 @@ public class SleepManager: ObservableObject {
         content.body = "Battery dropped below 20%. Sleep prevention has been disabled."
         let request = UNNotificationRequest(identifier: "battery-safety", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
-    }
-
-    public var iconName: String {
-        return isActive ? "open" : "closed"
     }
 
     public var launchAtLogin: Bool {
