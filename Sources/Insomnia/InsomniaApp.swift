@@ -31,25 +31,16 @@ struct InsomniaApp: App {
             Divider()
 
             // Timer options
-            Button("For 15 Minutes") {
-                sleepManager.activate(for: 15 * 60)
-            }
-            .disabled(sleepManager.isActive && sleepManager.remainingTime == 15 * 60) // Simple check, might refine later
+            timerButton(label: "For 15 Minutes", seconds: 15 * 60)
+            timerButton(label: "For 30 Minutes", seconds: 30 * 60)
+            timerButton(label: "For 1 Hour", seconds: 60 * 60)
 
-            Button("For 30 Minutes") {
-                sleepManager.activate(for: 30 * 60)
-            }
-            
-            Button("For 1 Hour") {
-                sleepManager.activate(for: 60 * 60)
-            }
-            
             Menu("More Options") {
-                Button("For 2 Hours") { sleepManager.activate(for: 2 * 3600) }
-                Button("For 4 Hours") { sleepManager.activate(for: 4 * 3600) }
-                Button("For 8 Hours") { sleepManager.activate(for: 8 * 3600) }
-                Button("For 12 Hours") { sleepManager.activate(for: 12 * 3600) }
-                Button("For 24 Hours") { sleepManager.activate(for: 24 * 3600) }
+                timerButton(label: "For 2 Hours", seconds: 2 * 3600)
+                timerButton(label: "For 4 Hours", seconds: 4 * 3600)
+                timerButton(label: "For 8 Hours", seconds: 8 * 3600)
+                timerButton(label: "For 12 Hours", seconds: 12 * 3600)
+                timerButton(label: "For 24 Hours", seconds: 24 * 3600)
             }
             
             Divider()
@@ -83,6 +74,16 @@ struct InsomniaApp: App {
         .menuBarExtraStyle(.menu) // Ensure standard menu style
     }
     
+    @ViewBuilder
+    private func timerButton(label: String, seconds: TimeInterval) -> some View {
+        let isSelected = sleepManager.isActive && sleepManager.remainingTime.map { Int($0) == Int(seconds) } == true
+        Button {
+            sleepManager.activate(for: seconds)
+        } label: {
+            Text(isSelected ? "✓ \(label)" : label)
+        }
+    }
+
     init() {
         let manager = SleepManager.shared
         let checker = UpdateChecker()
