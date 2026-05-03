@@ -19,9 +19,13 @@ struct InsomniaApp: App {
 
             // Unconditional keep awake
             Button {
-                sleepManager.toggle()
+                if sleepManager.isActive && sleepManager.activatedDuration == nil {
+                    sleepManager.deactivate()
+                } else {
+                    sleepManager.activate()
+                }
             } label: {
-                if sleepManager.isActive && sleepManager.remainingTime == nil {
+                if sleepManager.isActive && sleepManager.activatedDuration == nil {
                     Text("✓ Indefinitely")
                 } else {
                     Text("Indefinitely")
