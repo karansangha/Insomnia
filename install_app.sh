@@ -40,9 +40,9 @@ fi
 
 # Create Info.plist
 # We read the one from local if available, or generate a minimal one
-if [ -f "insomnia/Info.plist" ]; then
+if [ -f "Sources/Insomnia/Info.plist" ]; then
     echo "Copying and configuring Info.plist..."
-    cp "insomnia/Info.plist" "${CONTENTS_DIR}/Info.plist"
+    cp "Sources/Insomnia/Info.plist" "${CONTENTS_DIR}/Info.plist"
     # Replace Xcode variables
     sed -i '' 's/$(EXECUTABLE_NAME)/'"${APP_NAME}"'/g' "${CONTENTS_DIR}/Info.plist"
     sed -i '' 's/$(PRODUCT_NAME)/'"${APP_NAME}"'/g' "${CONTENTS_DIR}/Info.plist"
@@ -81,14 +81,14 @@ fi
 # Compilation usually handles this if we use xcodebuild, but with SPM it's trickier.
 # For now, we rely on the resources copied above. If AppIcon is in xcassets, it needs to be compiled to icns.
 # We'll skip complex icon compilation for this simple script unless the user has 'iconutil'.
-if [ -d "insomnia/Assets.xcassets/AppIcon.appiconset" ]; then
+if [ -d "Sources/Insomnia/Assets.xcassets/AppIcon.appiconset" ]; then
     echo "Compiling AppIcon..."
-    if xcrun actool insomnia/Assets.xcassets --compile "${RESOURCES_DIR}" --platform macosx --minimum-deployment-target 13.0 --app-icon AppIcon --output-partial-info-plist /tmp/partial.plist; then
+    if xcrun actool Sources/Insomnia/Assets.xcassets --compile "${RESOURCES_DIR}" --platform macosx --minimum-deployment-target 13.0 --app-icon AppIcon --output-partial-info-plist /tmp/partial.plist; then
         echo "Asset compilation successful."
     else
         echo "Warning: icon compilation failed. Falling back to copying raw images."
         # Copy raw pngs to Resources root so Image("name") can find them
-        find insomnia/Assets.xcassets -name "*.png" -exec cp {} "${RESOURCES_DIR}/" \;
+        find Sources/Insomnia/Assets.xcassets -name "*.png" -exec cp {} "${RESOURCES_DIR}/" \;
     fi
 fi
 
