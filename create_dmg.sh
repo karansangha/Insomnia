@@ -2,7 +2,8 @@
 set -e
 
 APP_NAME="Insomnia"
-DMG_NAME="${APP_NAME}_Installer.dmg"
+VERSION_SUFFIX="${APP_VERSION:+_${APP_VERSION}}"
+DMG_NAME="${APP_NAME}${VERSION_SUFFIX}_Installer.dmg"
 APP_BUNDLE="${APP_NAME}.app"
 
 # Ensure the app is built
