@@ -2,7 +2,6 @@ import Foundation
 import IOKit
 import IOKit.pwr_mgt
 import IOKit.ps
-import SwiftUI
 import ServiceManagement
 import Combine
 import UserNotifications
@@ -13,6 +12,7 @@ public class SleepManager: ObservableObject {
 
     @Published public var isActive: Bool = false
     @Published public var remainingTime: TimeInterval? = nil
+    @Published public var activatedDuration: TimeInterval? = nil
     @Published public var batterySafetyEnabled: Bool = false {
         didSet {
             UserDefaults.standard.set(batterySafetyEnabled, forKey: "batterySafetyEnabled")
@@ -26,7 +26,7 @@ public class SleepManager: ObservableObject {
             if isActive {
                 // Explicitly capture remainingTime before teardown, then rebuild with new assertion type.
                 let preservedTime = remainingTime
-                IOPMAssertionRelease(assertionID)
+                assertionManager.release(id: assertionID)
                 timer?.invalidate()
                 timer = nil
                 tickCount = 0
@@ -36,12 +36,14 @@ public class SleepManager: ObservableObject {
         }
     }
 
+    private let assertionManager: PowerAssertionManaging
     private var assertionID: IOPMAssertionID = 0
     private var timer: Timer?
     private var tickCount = 0
     private let reasonForActivity = "Insomnia - Prevent Sleep" as CFString
 
-    public init() {
+    public init(assertionManager: PowerAssertionManaging = LivePowerAssertionManager()) {
+        self.assertionManager = assertionManager
         self.batterySafetyEnabled = UserDefaults.standard.bool(forKey: "batterySafetyEnabled")
     }
 
@@ -62,15 +64,11 @@ public class SleepManager: ObservableObject {
     }
 
     private func _createAssertion(type assertionType: CFString, duration: TimeInterval?) {
-        let success = IOPMAssertionCreateWithName(
-            assertionType,
-            IOPMAssertionLevel(kIOPMAssertionLevelOn),
-            reasonForActivity,
-            &assertionID
-        )
+        let success = assertionManager.create(type: assertionType, name: reasonForActivity, id: &assertionID)
         if success == kIOReturnSuccess {
             isActive = true
             remainingTime = duration
+            activatedDuration = duration
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.tick()
@@ -84,12 +82,13 @@ public class SleepManager: ObservableObject {
 
     public func deactivate() {
         if isActive {
-            IOPMAssertionRelease(assertionID)
+            assertionManager.release(id: assertionID)
             isActive = false
         }
         timer?.invalidate()
         timer = nil
         remainingTime = nil
+        activatedDuration = nil
         tickCount = 0
     }
 
@@ -139,10 +138,6 @@ public class SleepManager: ObservableObject {
         content.body = "Battery dropped below 20%. Sleep prevention has been disabled."
         let request = UNNotificationRequest(identifier: "battery-safety", content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
-    }
-
-    public var iconName: String {
-        return isActive ? "open" : "closed"
     }
 
     public var launchAtLogin: Bool {

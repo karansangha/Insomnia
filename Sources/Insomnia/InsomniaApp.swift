@@ -19,9 +19,13 @@ struct InsomniaApp: App {
 
             // Unconditional keep awake
             Button {
-                sleepManager.toggle()
+                if sleepManager.isActive && sleepManager.activatedDuration == nil {
+                    sleepManager.deactivate()
+                } else {
+                    sleepManager.activate()
+                }
             } label: {
-                if sleepManager.isActive && sleepManager.remainingTime == nil {
+                if sleepManager.isActive && sleepManager.activatedDuration == nil {
                     Text("✓ Indefinitely")
                 } else {
                     Text("Indefinitely")
@@ -48,7 +52,7 @@ struct InsomniaApp: App {
             // Status info
             if let remaining = sleepManager.remainingTimeIdentifier {
                 Text(remaining)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             
             Toggle("Launch at Login", isOn: Binding(
@@ -69,16 +73,20 @@ struct InsomniaApp: App {
             .keyboardShortcut("q")
             
         } label: {
-            Image(sleepManager.iconName)
+            Image(sleepManager.isActive ? "open" : "closed")
         }
         .menuBarExtraStyle(.menu) // Ensure standard menu style
     }
     
     @ViewBuilder
     private func timerButton(label: String, seconds: TimeInterval) -> some View {
-        let isSelected = sleepManager.isActive && sleepManager.remainingTime.map { Int($0) == Int(seconds) } == true
+        let isSelected = sleepManager.isActive && sleepManager.activatedDuration.map { Int($0) == Int(seconds) } == true
         Button {
-            sleepManager.activate(for: seconds)
+            if isSelected {
+                sleepManager.deactivate()
+            } else {
+                sleepManager.activate(for: seconds)
+            }
         } label: {
             Text(isSelected ? "✓ \(label)" : label)
         }

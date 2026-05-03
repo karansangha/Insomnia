@@ -1,7 +1,6 @@
 import AppIntents
 import InsomniaCore
 
-@available(macOS 13.0, *)
 struct ToggleInsomniaIntent: AppIntent {
     static var title: LocalizedStringResource = "Toggle Insomnia"
     static var description = IntentDescription("Turns Insomnia's sleep prevention on or off.")
@@ -22,7 +21,6 @@ struct ToggleInsomniaIntent: AppIntent {
     }
 }
 
-@available(macOS 13.0, *)
 struct SetInsomniaTimerIntent: AppIntent {
     static var title: LocalizedStringResource = "Set Insomnia Timer"
     static var description = IntentDescription("Keeps the Mac awake for a specified number of minutes.")
@@ -43,7 +41,6 @@ struct SetInsomniaTimerIntent: AppIntent {
     }
 }
 
-@available(macOS 13.0, *)
 struct InsomniaShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
