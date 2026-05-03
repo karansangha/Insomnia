@@ -24,7 +24,14 @@ public class SleepManager: ObservableObject {
     @Published public var allowDisplaySleep: Bool = false {
         didSet {
             if isActive {
-                activate(for: remainingTime)
+                // Explicitly capture remainingTime before teardown, then rebuild with new assertion type.
+                let preservedTime = remainingTime
+                IOPMAssertionRelease(assertionID)
+                timer?.invalidate()
+                timer = nil
+                tickCount = 0
+                let assertionType = allowDisplaySleep ? kIOPMAssertionTypePreventUserIdleSystemSleep : kIOPMAssertionTypeNoDisplaySleep
+                _createAssertion(type: assertionType as CFString, duration: preservedTime)
             }
         }
     }
@@ -50,20 +57,20 @@ public class SleepManager: ObservableObject {
         if isActive {
             deactivate()
         }
-
         let assertionType = allowDisplaySleep ? kIOPMAssertionTypePreventUserIdleSystemSleep : kIOPMAssertionTypeNoDisplaySleep
+        _createAssertion(type: assertionType as CFString, duration: duration)
+    }
 
+    private func _createAssertion(type assertionType: CFString, duration: TimeInterval?) {
         let success = IOPMAssertionCreateWithName(
-            assertionType as CFString,
+            assertionType,
             IOPMAssertionLevel(kIOPMAssertionLevelOn),
             reasonForActivity,
             &assertionID
         )
-
         if success == kIOReturnSuccess {
             isActive = true
             remainingTime = duration
-
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.tick()
