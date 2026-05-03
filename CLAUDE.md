@@ -24,7 +24,14 @@ swift test --filter SleepManagerTests/testToggle
 ./create_dmg.sh
 ```
 
-Releases are triggered by pushing a `v*` tag; CI builds, tests, signs, and publishes a DMG automatically.
+## Releasing
+
+```bash
+# Bump version, commit, tag, and push — triggers CI
+./bump_version.sh 2.5
+```
+
+CI runs tests, builds a versioned DMG (`Insomnia_2.5_Installer.dmg`), and creates a **draft** GitHub release with auto-generated notes. Edit the draft on GitHub and publish when ready.
 
 ## Architecture
 
