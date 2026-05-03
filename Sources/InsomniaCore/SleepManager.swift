@@ -25,7 +25,7 @@ public class SleepManager: ObservableObject {
             if isActive {
                 // Explicitly capture remainingTime before teardown, then rebuild with new assertion type.
                 let preservedTime = remainingTime
-                IOPMAssertionRelease(assertionID)
+                assertionManager.release(id: assertionID)
                 timer?.invalidate()
                 timer = nil
                 tickCount = 0
@@ -35,12 +35,14 @@ public class SleepManager: ObservableObject {
         }
     }
 
+    private let assertionManager: PowerAssertionManaging
     private var assertionID: IOPMAssertionID = 0
     private var timer: Timer?
     private var tickCount = 0
     private let reasonForActivity = "Insomnia - Prevent Sleep" as CFString
 
-    public init() {
+    public init(assertionManager: PowerAssertionManaging = LivePowerAssertionManager()) {
+        self.assertionManager = assertionManager
         self.batterySafetyEnabled = UserDefaults.standard.bool(forKey: "batterySafetyEnabled")
     }
 
@@ -61,12 +63,7 @@ public class SleepManager: ObservableObject {
     }
 
     private func _createAssertion(type assertionType: CFString, duration: TimeInterval?) {
-        let success = IOPMAssertionCreateWithName(
-            assertionType,
-            IOPMAssertionLevel(kIOPMAssertionLevelOn),
-            reasonForActivity,
-            &assertionID
-        )
+        let success = assertionManager.create(type: assertionType, name: reasonForActivity, id: &assertionID)
         if success == kIOReturnSuccess {
             isActive = true
             remainingTime = duration
@@ -83,7 +80,7 @@ public class SleepManager: ObservableObject {
 
     public func deactivate() {
         if isActive {
-            IOPMAssertionRelease(assertionID)
+            assertionManager.release(id: assertionID)
             isActive = false
         }
         timer?.invalidate()
