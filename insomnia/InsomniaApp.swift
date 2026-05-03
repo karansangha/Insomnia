@@ -43,6 +43,14 @@ struct InsomniaApp: App {
                 sleepManager.activate(for: 60 * 60)
             }
             
+            Menu("More Options") {
+                Button("For 2 Hours") { sleepManager.activate(for: 2 * 3600) }
+                Button("For 4 Hours") { sleepManager.activate(for: 4 * 3600) }
+                Button("For 8 Hours") { sleepManager.activate(for: 8 * 3600) }
+                Button("For 12 Hours") { sleepManager.activate(for: 12 * 3600) }
+                Button("For 24 Hours") { sleepManager.activate(for: 24 * 3600) }
+            }
+            
             Divider()
             
             // Status info
@@ -57,6 +65,9 @@ struct InsomniaApp: App {
             ))
             
             Toggle("Allow Display Sleep", isOn: $sleepManager.allowDisplaySleep)
+            
+            Toggle("Battery Safety (< 20%)", isOn: $sleepManager.batterySafetyEnabled)
+            
             
             Divider()
             
@@ -78,7 +89,6 @@ struct InsomniaApp: App {
         _updateChecker = StateObject(wrappedValue: checker)
         
         // Initialize Core
-        let manager = SleepManager()
-        _sleepManager = StateObject(wrappedValue: manager)
+        _sleepManager = StateObject(wrappedValue: SleepManager.shared)
     }
 }

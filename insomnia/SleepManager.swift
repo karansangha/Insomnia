@@ -1,15 +1,27 @@
 import Foundation
 import IOKit
 import IOKit.pwr_mgt
+import IOKit.ps
 import SwiftUI
+import AppKit
 import ServiceManagement
 
 import ServiceManagement
 import Combine
 
 public class SleepManager: ObservableObject {
+    public static let shared = SleepManager()
+
     @Published public var isActive: Bool = false
     @Published public var remainingTime: TimeInterval? = nil
+    @Published public var batterySafetyEnabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(batterySafetyEnabled, forKey: "batterySafetyEnabled")
+            if batterySafetyEnabled && isActive {
+                checkBattery()
+            }
+        }
+    }
     @Published public var allowDisplaySleep: Bool = false {
         didSet {
             if isActive {
@@ -21,10 +33,11 @@ public class SleepManager: ObservableObject {
     
     private var assertionID: IOPMAssertionID = 0
     private var timer: Timer?
+    private var tickCount = 0
     private let reasonForActivity = "Insomnia - Prevent Sleep" as CFString
     
     public init() {
-        // Restore state if needed, or default to off
+        self.batterySafetyEnabled = UserDefaults.standard.bool(forKey: "batterySafetyEnabled")
     }
     
     public func toggle() {
@@ -52,16 +65,11 @@ public class SleepManager: ObservableObject {
         
         if success == kIOReturnSuccess {
             isActive = true
+            remainingTime = duration
             
-            if let duration = duration {
-                remainingTime = duration
-                timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                    self?.tick()
-                }
-            } else {
-                remainingTime = nil
-                timer?.invalidate()
-                timer = nil
+            // start timer unconditionally to handle both custom duration and battery checking
+            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                self?.tick()
             }
         } else {
             print("Failed to create IOPMAssertion")
@@ -80,12 +88,56 @@ public class SleepManager: ObservableObject {
     }
     
     private func tick() {
-        guard let time = remainingTime else { return }
-        if time > 0 {
-            remainingTime = time - 1
-        } else {
-            deactivate()
+        tickCount += 1
+        
+        if let time = remainingTime {
+            if time > 0 {
+                remainingTime = time - 1
+            } else {
+                deactivate()
+                return
+            }
         }
+        
+        // Every 30 seconds, check battery
+        if batterySafetyEnabled && tickCount % 30 == 0 {
+            checkBattery()
+        }
+    }
+    
+    private func checkBattery() {
+        guard let level = SleepManager.getBatteryLevel() else { return }
+        if level <= 20 {
+            deactivate()
+            DispatchQueue.main.async {
+                self.showBatteryAlert()
+            }
+        }
+    }
+    
+    public static func getBatteryLevel() -> Int? {
+        let snapshot = IOPSCopyPowerSourcesInfo().takeRetainedValue()
+        let sources = IOPSCopyPowerSourcesList(snapshot).takeRetainedValue() as Array
+        
+        for ps in sources {
+            let info = IOPSGetPowerSourceDescription(snapshot, ps).takeUnretainedValue() as! [String: Any]
+            if let isPresent = info[kIOPSIsPresentKey] as? Bool, isPresent,
+               let capacity = info[kIOPSCurrentCapacityKey] as? Int,
+               let max = info[kIOPSMaxCapacityKey] as? Int {
+                return Int((Double(capacity) / Double(max)) * 100)
+            }
+        }
+        return nil
+    }
+    
+    private func showBatteryAlert() {
+        let alert = NSAlert()
+        alert.messageText = "Battery Safety Triggered"
+        alert.informativeText = "Insomnia has deactivated because your battery dropped below 20%."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "OK")
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
     }
     
     public var iconName: String {
