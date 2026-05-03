@@ -1,5 +1,6 @@
 import SwiftUI
 import InsomniaCore
+import UserNotifications
 
 @main
 struct InsomniaApp: App {
@@ -87,8 +88,11 @@ struct InsomniaApp: App {
         let checker = UpdateChecker()
         checker.checkForUpdates()
         _updateChecker = StateObject(wrappedValue: checker)
-        
+
         // Initialize Core
         _sleepManager = StateObject(wrappedValue: SleepManager.shared)
+
+        // Request notification permission for battery safety alerts
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 }

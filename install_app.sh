@@ -48,6 +48,7 @@ if [ -f "insomnia/Info.plist" ]; then
     sed -i '' 's/$(PRODUCT_NAME)/'"${APP_NAME}"'/g' "${CONTENTS_DIR}/Info.plist"
     sed -i '' 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.karansangha.'"${APP_NAME}"'/g' "${CONTENTS_DIR}/Info.plist"
     sed -i '' 's/$(MACOSX_DEPLOYMENT_TARGET)/13.0/g' "${CONTENTS_DIR}/Info.plist"
+    sed -i '' 's/$(DEVELOPMENT_LANGUAGE)/en/g' "${CONTENTS_DIR}/Info.plist"
 else
     echo "Generating Info.plist..."
     cat > "${CONTENTS_DIR}/Info.plist" <<EOF

@@ -9,13 +9,14 @@ struct ToggleInsomniaIntent: AppIntent {
     @Parameter(title: "Turn On", default: true)
     var turnOn: Bool
 
-    @MainActor
     func perform() async throws -> some IntentResult {
-        let manager = SleepManager.shared
-        if turnOn {
-            manager.activate()
-        } else {
-            manager.deactivate()
+        let on = turnOn
+        await MainActor.run {
+            if on {
+                SleepManager.shared.activate()
+            } else {
+                SleepManager.shared.deactivate()
+            }
         }
         return .result()
     }
@@ -29,13 +30,14 @@ struct SetInsomniaTimerIntent: AppIntent {
     @Parameter(title: "Minutes", default: 60)
     var minutes: Int
 
-    @MainActor
     func perform() async throws -> some IntentResult {
-        let manager = SleepManager.shared
-        if minutes > 0 {
-            manager.activate(for: TimeInterval(minutes * 60))
-        } else {
-            manager.deactivate()
+        let mins = minutes
+        await MainActor.run {
+            if mins > 0 {
+                SleepManager.shared.activate(for: TimeInterval(mins * 60))
+            } else {
+                SleepManager.shared.deactivate()
+            }
         }
         return .result()
     }
